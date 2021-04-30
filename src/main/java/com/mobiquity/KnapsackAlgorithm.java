@@ -18,6 +18,7 @@ public class KnapsackAlgorithm {
 
     public static List<Integer> findOptimalItemIndices(Package pack) {
         List<Integer> result = new ArrayList<>();
+        // Weights are multiplied by 100 to lose the fractional part of the number
         Integer[][] table = new Integer[pack.getItems().size() + 1][pack.getMaxWeight() * 100 + 1];
         Integer[] weights = pack.getItems().stream().map(i -> Math.round(i.getWeight() * 100)).toArray(Integer[]::new);
         Integer[] prices = pack.getItems().stream().map(Item::getPrice).toArray(Integer[]::new);
