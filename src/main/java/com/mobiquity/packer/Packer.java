@@ -29,8 +29,7 @@ public class Packer {
         // Initialize parser with input file content
         Parser parser;
         try {
-            Path path = Paths.get(filePath);
-            parser = new Parser(Files.readAllLines(path));
+            parser = new Parser(Files.readAllLines(Paths.get(filePath)));
         } catch (IOException e) {
             throw new APIException("File could not be read", e);
         }
