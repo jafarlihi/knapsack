@@ -1,6 +1,7 @@
 package com.mobiquity.packer;
 
 import com.mobiquity.Parser;
+import com.mobiquity.exception.ParseException;
 import com.mobiquity.model.Package;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ParserTest {
 
     @Test
-    public void testParsing() {
+    public void testParsing() throws ParseException {
         List<String> content = new ArrayList<>(){{
             add("81 : (1,53.38,€45) (2,88.62,€98) (3,78.48,€3) (4,72.30,€76) (5,30.18,€9) (6,46.34,€48)");
         }};

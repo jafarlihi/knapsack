@@ -2,6 +2,7 @@ package com.mobiquity.packer;
 
 import com.mobiquity.Parser;
 import com.mobiquity.KnapsackAlgorithm;
+import com.mobiquity.exception.ParseException;
 import com.mobiquity.model.Item;
 import com.mobiquity.model.Package;
 import com.mobiquity.exception.APIException;
@@ -35,7 +36,12 @@ public class Packer {
         }
 
         // Parse the input file content
-        List<Package> packages = parser.parse();
+        List<Package> packages;
+        try {
+            packages = parser.parse();
+        } catch (ParseException e) {
+            throw new APIException("Input content is malformed", e);
+        }
 
         // Execute Bean Validation on parsed objects
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();

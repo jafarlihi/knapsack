@@ -1,5 +1,6 @@
 package com.mobiquity;
 
+import com.mobiquity.exception.ParseException;
 import com.mobiquity.model.Item;
 import com.mobiquity.model.Package;
 
@@ -15,10 +16,17 @@ public class Parser {
         this.content = content;
     }
 
-    public List<Package> parse() {
+    public List<Package> parse() throws ParseException {
         List<Package> packages = new ArrayList<>();
+
         for (String taskString : content) {
-            Integer maxWeight = Integer.parseInt(taskString.split(":", 2)[0].trim());
+            int maxWeight;
+            try {
+                maxWeight = Integer.parseInt(taskString.split(":", 2)[0].trim());
+            } catch (NumberFormatException e) {
+                throw new ParseException("Max weight is not a number", e);
+            }
+
             List<Item> items = new ArrayList<>();
             int itemStringStart = -1;
             for (int i = 0; i < taskString.length(); i++) {
@@ -29,15 +37,25 @@ public class Parser {
                     itemStringStart = -1;
                 }
             }
+
             packages.add(new Package(maxWeight, items));
         }
+
         return packages;
     }
 
-    private Item parseItemString(String itemString) {
+    private Item parseItemString(String itemString) throws ParseException {
         String[] itemStringSplit = itemString.split(",", 3);
-        Float weight = Float.parseFloat(itemStringSplit[1]);
-        Integer price = Integer.parseInt(itemStringSplit[2].replace('€', ' ').trim());
-        return new Item(weight, price);
+
+        if (itemStringSplit.length != 3)
+            throw new ParseException("Item string is malformed");
+
+        try {
+            Float weight = Float.parseFloat(itemStringSplit[1]);
+            Integer price = Integer.parseInt(itemStringSplit[2].replace('€', ' ').trim());
+            return new Item(weight, price);
+        } catch (NumberFormatException e) {
+            throw new ParseException("Item string values are not numbers", e);
+        }
     }
 }
