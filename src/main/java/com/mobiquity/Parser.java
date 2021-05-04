@@ -7,7 +7,6 @@ import com.mobiquity.model.Package;
 import java.util.ArrayList;
 import java.util.List;
 
-// Takes in list of strings as input and parses them into Item and Package POJOs.
 public class Parser {
 
     private List<String> content;
