@@ -13,9 +13,9 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,16 +45,20 @@ public class Packer {
         // Execute Bean Validation on parsed objects
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
+        Set<ConstraintViolation> violations = new HashSet<>();
 
         for (Package pack : packages) {
-            Set<ConstraintViolation<Package>> packageViolations = validator.validate(pack);
-            for (ConstraintViolation<Package> violation : packageViolations)
-                throw new APIException(violation.getMessage());
-            for (Item item : pack.getItems()) {
-                Set<ConstraintViolation<Item>> itemViolations = validator.validate(item);
-                for (ConstraintViolation<Item> violation : itemViolations)
-                    throw new APIException(violation.getMessage());
-            }
+            violations.addAll(validator.validate(pack));
+            for (Item item : pack.getItems())
+                violations.addAll(validator.validate(item));
+        }
+
+        if (!violations.isEmpty()) {
+            String violationMessage = violations
+                    .stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.joining("; "));
+            throw new APIException("Input constraint violation(s) found: " + violationMessage);
         }
 
         // Run the Knapsack algorithm over each parsed Package object
